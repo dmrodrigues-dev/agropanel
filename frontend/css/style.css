@@ -1,0 +1,93 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+}
+
+header {
+  height: 7vh;
+  width: 100%;
+  padding: 0 2.5vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background-color: aqua;
+}
+
+header * {
+  align-content: center;
+}
+
+header ul {
+  width: 30vw;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  list-style: none;
+}
+
+header a,
+a:visited {
+  text-decoration: none;
+  font-size: 20px;
+}
+
+main {
+  flex: 1;
+}
+
+.card {
+  background-color: blue;
+  justify-items: center;
+  padding: 5vh 0;
+}
+
+.aside {
+  max-width: 35vw;
+}
+
+#table-compras,
+#table-vendas,
+#table-produtos {
+  background-color: red;
+  margin-bottom: 5vh;
+  border-spacing: 2vw 2vh;
+  text-align: center;
+}
+
+th,
+td {
+  background-color: aliceblue;
+  padding: 1vh 1vw;
+}
+
+#update-delete-produto,
+#update-delete-compra,
+#update-delete-venda {
+  display: none;
+}
+
+footer {
+  padding-top: 1vh;
+  width: 100%;
+  background-color: aquamarine;
+  text-align: center;
+}
+
+footer ul {
+  display: flex;
+  margin: 2vh 0;
+  flex-direction: row;
+  width: 70vw;
+  justify-self: center;
+  justify-content: space-around;
+  list-style: none;
+}

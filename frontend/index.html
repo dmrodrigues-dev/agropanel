@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agropanel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="/frontend/css/style.css">
+</head>
+
+<body>
+    <header>
+        <h1>AGROPANEL</h1>
+        <nav>
+            <ul>
+                <li><a href="./compras.html">Compras</a></li>
+                <li><a href="./vendas.html">Vendas</a></li>
+                <li><a href="./sobre.html">Sobre o Projeto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="dashboards">
+            <!-- Gráficos aqui -->
+        </section>
+
+        <aside class="card aside">
+            <table id="table-produtos">
+            </table>
+
+            <div id="add-produto">
+                <input type="text" name="nome" id="nome">
+
+                <input type="button" value="Adicionar" id="but-add-produto" onclick="add_produto()">
+                <div id="update-delete-produto">
+                    <input type="button" value="Alterar" onclick="upt_produto()">
+                    <input type="button" value="Deletar" onclick="del_produto()">
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <footer>
+        <h2>Desenvolvido por dmrodrigues-dev</h2>
+        <ul>
+            <li><a href="link do github">github</a></li>
+            <li><a href="link do linkedin">linkedin</a></li>
+            <li><a href="email"></a>email</li>
+        </ul>
+    </footer>
+</body>
+
+<script src="javascript/index.js"></script>
+
+</html>

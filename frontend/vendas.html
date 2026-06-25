@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+    <header>
+        <h1>AGROPANEL</h1>
+        <nav>
+            <ul>
+                <li><a href="./index.html">Página Inicial</a></li>
+                <li><a href="./compras.html">Compras</a></li>
+                <li><a href="./sobre.html">Sobre o Projeto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="card">
+            <table id="table-vendas">
+            </table>
+
+            <div class="add-venda">
+                <input type="date" name="dia" id="dia">
+                <input type="number" name="produto" id="produto_id">
+                <input type="number" name="preco" id="preco">
+                <input type="number" name="qtd" id="qtd">
+                <input type="text" name="comprador" id="comprador">
+
+                <input type="button" value="Adicionar" id="but-add-venda" onclick="add_venda()">
+                <div id="update-delete-venda">
+                    <input type="button" value="Alterar" onclick="upt_venda()">
+                    <input type="button" value="Deletar" onclick="del_venda()">
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <footer>
+        <h2>Desenvolvido por dmrodrigues-dev</h2>
+        <ul>
+            <li><a href="link do github">github</a></li>
+            <li><a href="link do linkedin">linkedin</a></li>
+            <li><a href="email"></a>email</li>
+        </ul>
+    </footer>
+</body>
+
+<script src="javascript/vendas.js"></script>
+
+</html>
