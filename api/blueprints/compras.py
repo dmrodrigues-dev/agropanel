@@ -1,4 +1,4 @@
-from api import database
+import database
 from flask import Blueprint, jsonify, request
 
 compras_bp = Blueprint('compras_bp', __name__)
@@ -30,7 +30,7 @@ def compras():
             for compra in compras:
                 lista_compras.append({
                     'id': compra[0],
-                    'dia': compra[1],
+                    'dia': compra[1].strftime('%Y-%m-%d'),
                     'produto_id': compra[2],
                     'preco': compra[3],
                     'qtd': compra[4],
@@ -117,7 +117,7 @@ def compra(compra_id):
             
             return jsonify({
                 'id': compra[0],
-                'dia': compra[1],
+                'dia': compra[1].strftime('%Y-%m-%d'),
                 'produto_id': compra[2],
                 'preco': compra[3],
                 'qtd': compra[4],
