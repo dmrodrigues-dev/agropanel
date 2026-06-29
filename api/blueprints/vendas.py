@@ -19,9 +19,9 @@ def vendas():
             dias = request.args.get('dias')
 
             if not dias:
-                cursor.execute("select * from vendas")
+                cursor.execute("select * from vendas order by id desc")
             else:
-                cursor.execute("select * from vendas where dia >= curdate() - interval %s day", (int(dias),))
+                cursor.execute("select * from vendas where dia >= curdate() - interval %s day order by id desc", (int(dias),))
 
             vendas = cursor.fetchall()
             lista_vendas = []
