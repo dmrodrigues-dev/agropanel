@@ -131,7 +131,15 @@ function upt_produto() {
 }
 
 function carregar_estatisticas() {
-  fetch("http://127.0.0.1:5000/api/estatisticas", {
+  let endpoint;
+  if (mesAno.value) {
+    let [selectedAno, selectedMes] = mesAno.value.split("-");
+    endpoint = `http://127.0.0.1:5000/api/estatisticas?mes=${selectedMes}&ano=${selectedAno}`;
+  } else {
+    endpoint = "http://127.0.0.1:5000/api/estatisticas";
+  }
+
+  fetch(endpoint, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   })
@@ -148,6 +156,8 @@ function carregar_estatisticas() {
 
 let registro, toggle;
 let tabela = document.getElementById("table-produtos");
+let mesAno = document.getElementById("mes");
 tabela.addEventListener("click", select_produto);
+mesAno.addEventListener("change", carregar_estatisticas);
 carregar_produtos();
 carregar_estatisticas();
