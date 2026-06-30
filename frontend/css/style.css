@@ -44,6 +44,12 @@ main {
   flex: 1;
 }
 
+.main-home {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+}
+
 .card {
   background-color: blue;
   justify-items: center;
@@ -52,6 +58,7 @@ main {
 
 .aside {
   max-width: 35vw;
+  width: 100%;
 }
 
 #table-compras,

@@ -130,7 +130,24 @@ function upt_produto() {
     });
 }
 
+function carregar_estatisticas() {
+  fetch("http://127.0.0.1:5000/api/estatisticas", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  })
+    .then((resposta) => {
+      if (!resposta.ok) {
+        throw new Error("Erro ao recuperar estatísticas.");
+      }
+      return resposta.json();
+    })
+    .then((dados) => {
+      console.log(dados);
+    });
+}
+
 let registro, toggle;
 let tabela = document.getElementById("table-produtos");
 tabela.addEventListener("click", select_produto);
 carregar_produtos();
+carregar_estatisticas();
