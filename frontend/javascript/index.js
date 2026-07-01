@@ -150,13 +150,46 @@ function carregar_estatisticas() {
       return resposta.json();
     })
     .then((dados) => {
-      console.log(dados);
+      receita.innerHTML = `
+      <h2>Receita</h2>
+      <p>${dados.receita}</p>`;
+
+      despesa.innerHTML = `
+      <h2>Despesa</h2>
+      <p>${dados.despesa}</p>`;
+
+      lucro.innerHTML = `
+      <h2>Lucro</h2>
+      <p>${dados.lucro}</p>`;
+
+      carregar_grafico(dados.vendaveis);
     });
 }
 
-let registro, toggle;
+function carregar_grafico(dados) {
+  if (chart != null) {
+    chart.destroy();
+  }
+
+  let labels = dados.map((item) => item.nome);
+  let values = dados.map((item) => item.valor);
+
+  chart = new Chart(canva, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [{ label: "Receita por produto", data: values }],
+    },
+  });
+}
+
+let registro, toggle, chart;
+let canva = document.getElementById("chart");
 let tabela = document.getElementById("table-produtos");
 let mesAno = document.getElementById("mes");
+let receita = document.getElementById("receita");
+let despesa = document.getElementById("despesa");
+let lucro = document.getElementById("lucro");
 tabela.addEventListener("click", select_produto);
 mesAno.addEventListener("change", carregar_estatisticas);
 carregar_produtos();
