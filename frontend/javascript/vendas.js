@@ -11,7 +11,7 @@ function carregar_vendas() {
     </tr>
     `;
 
-  fetch("http://127.0.0.1:5000/api/vendas", {
+  fetch(`${window.API_URL}/api/vendas`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   })
@@ -50,7 +50,7 @@ function add_venda() {
     return;
   }
 
-  fetch("http://127.0.0.1:5000/api/vendas", {
+  fetch(`${window.API_URL}/api/vendas`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -114,7 +114,7 @@ function del_venda() {
   let conf = confirm("Deletar registro selecionado?");
 
   if (conf) {
-    fetch(`http://127.0.0.1:5000/api/vendas/${registro.id}`, {
+    fetch(`${window.API_URL}/api/vendas/${registro.id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     })
@@ -145,7 +145,7 @@ function upt_venda() {
     return;
   }
 
-  fetch(`http://127.0.0.1:5000/api/vendas/${registro.id}`, {
+  fetch(`${window.API_URL}/api/vendas/${registro.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

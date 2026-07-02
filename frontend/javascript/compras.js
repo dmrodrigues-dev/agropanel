@@ -11,7 +11,7 @@ function carregar_compras() {
     </tr>
     `;
 
-  fetch("http://127.0.0.1:5000/api/compras", {
+  fetch(`${window.API_URL}/api/compras`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   })
@@ -50,7 +50,7 @@ function add_compra() {
     return;
   }
 
-  fetch("http://127.0.0.1:5000/api/compras", {
+  fetch(`${window.API_URL}/api/compras`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -114,7 +114,7 @@ function del_compra() {
   let conf = confirm("Deletar registro selecionado?");
 
   if (conf) {
-    fetch(`http://127.0.0.1:5000/api/compras/${registro.id}`, {
+    fetch(`${window.API_URL}/api/compras/${registro.id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     })
@@ -145,7 +145,7 @@ function upt_compra() {
     return;
   }
 
-  fetch(`http://127.0.0.1:5000/api/compras/${registro.id}`, {
+  fetch(`${window.API_URL}/api/compras/${registro.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

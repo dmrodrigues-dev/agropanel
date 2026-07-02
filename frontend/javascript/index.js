@@ -7,7 +7,7 @@ function carregar_produtos() {
         <th>Nome</th>
     </tr>`;
 
-  fetch("http://127.0.0.1:5000/api/produtos", {
+  fetch(`${window.API_URL}/api/produtos`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   })
@@ -40,7 +40,7 @@ function add_produto() {
     return;
   }
 
-  fetch("http://127.0.0.1:5000/api/produtos", {
+  fetch(`${window.API_URL}/api/produtos`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ nome: nome }),
@@ -85,7 +85,7 @@ function del_produto() {
   let conf = confirm("Deletar produto selecionado?");
 
   if (conf) {
-    fetch(`http://127.0.0.1:5000/api/produtos/${registro.id}`, {
+    fetch(`${window.API_URL}/api/produtos/${registro.id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
     })
@@ -111,7 +111,7 @@ function upt_produto() {
     return;
   }
 
-  fetch(`http://127.0.0.1:5000/api/produtos/${registro.id}`, {
+  fetch(`${window.API_URL}/api/produtos/${registro.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ nome: nome }),
@@ -134,9 +134,9 @@ function carregar_estatisticas() {
   let endpoint;
   if (mesAno.value) {
     let [selectedAno, selectedMes] = mesAno.value.split("-");
-    endpoint = `http://127.0.0.1:5000/api/estatisticas?mes=${selectedMes}&ano=${selectedAno}`;
+    endpoint = `${window.API_URL}/api/estatisticas?mes=${selectedMes}&ano=${selectedAno}`;
   } else {
-    endpoint = "http://127.0.0.1:5000/api/estatisticas";
+    endpoint = `${window.API_URL}/api/estatisticas`;
   }
 
   fetch(endpoint, {
