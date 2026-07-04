@@ -44,6 +44,8 @@ def vendas():
             # Verifica se os campos do novo registros são aceitaveis e se todos os obrigatórios estão preenchidos
             utils.is_request_ok(registro, chaves_obrigatorias+['comprador'], chaves_obrigatorias)
 
+            # Verifica se existe um produto com o ID fornecido
+            utils.get_line_or_abort(cursor, 'produtos', registro.get('produto_id'))
 
             cursor.execute("insert into vendas values (null, %s, %s, %s, %s, %s)",
                                     (registro.get('dia'),
@@ -79,6 +81,9 @@ def venda(venda_id):
             # Verifica se o campo alterado é válido
             utils.is_request_ok(data, chaves_obrigatorias+['comprador'])
 
+            # Se houver alteração no ID, verifica se existe um produto com o ID fornecido
+            if 'produto_id' in data:
+                utils.get_line_or_abort(cursor, 'produtos', data.get('produto_id'))
 
             # Cria string com todos os campos, seguidos por "= %s" separados por ","
             campos_update = ', '.join([f"{campo} = %s" for campo in data.keys()])

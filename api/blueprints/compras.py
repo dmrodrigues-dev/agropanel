@@ -43,6 +43,9 @@ def compras():
             # Valida se todos os campos foram preenchidos e não há nenhum campo inválido
             utils.is_request_ok(registro, chaves_obrigatorias, chaves_obrigatorias)
 
+            # Verifica se existe um produto com o ID fornecido
+            utils.get_line_or_abort(cursor, 'produtos', registro.get('produto_id'))
+
             cursor.execute("insert into compras values (null, %s, %s, %s, %s, %s)",
                                     (registro.get('dia'),
                                      registro.get('produto_id'),
@@ -77,6 +80,9 @@ def compra(compra_id):
             # Valida se os dados recebidos são campos válidos
             utils.is_request_ok(data, chaves_obrigatorias)
 
+            # Se houver alteração no ID, verifica se o ID do produto é valido
+            if 'produto_id' in data:
+                utils.get_line_or_abort(cursor, 'produtos', data.get('produto_id'))
 
             # Criar string com todos os campos, seguidos por "= %s" separados por ","
             campos_update = ', '.join([f"{campo} = %s" for campo in data.keys()])
