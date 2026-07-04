@@ -1,6 +1,6 @@
 import database
+import utils
 from flask import Blueprint, jsonify, request
-from datetime import date
 
 estatisticas_bp = Blueprint('estatisticas', __name__)
 
@@ -17,15 +17,8 @@ def estatisticas_gerais():
     ano = request.args.get('ano')
 
     try:
-        # Valida mes e ano, retorna 400 caso sejam inválidos
-        if mes and ano:
-            if mes.isdigit() and ano.isdigit() and (0 < int(mes) < 13) and (1999 < int(ano) < 2500):
-                filtro = f"{int(mes):02d}-{ano}"
-            else:
-                return jsonify({'message': 'Mês e ano inválidos.'}), 400
-        # Se não houver mes e ano, usa o mes atual
-        else:
-            filtro = date.today().strftime('%m-%Y')
+        # Valida mes e ano e recebe um filtro para a query
+        filtro = utils.month_and_year_validation(mes, ano)
 
         # Busca a soma da multiplicação de quantidade e do valor de cada compra
         cursor.execute("select coalesce(sum(preco*qtd), 0) from compras where date_format(dia, '%m-%Y') = %s ", (filtro,))
@@ -57,9 +50,6 @@ def estatisticas_gerais():
             'lucro': lucro,
             'vendaveis': vendaveis
         })
-
-    except Exception as e:
-        return jsonify({'message': str(e)}), 500
 
     finally:
         cursor.close()

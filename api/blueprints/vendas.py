@@ -1,9 +1,10 @@
 import database
+import utils
 from flask import Blueprint, jsonify, request
 
 vendas_bp = Blueprint('vendas', __name__)
 
-chaves_obrigatorias = ('dia', 'produto_id', 'preco', 'qtd') # Ultimo campo, "comprador" é opcional
+chaves_obrigatorias = ['dia', 'produto_id', 'preco', 'qtd'] # Ultimo campo, "comprador" é opcional
 
 # Rota para adicionar venda ou listar vendas
 @vendas_bp.route('/api/vendas', methods=['GET', 'POST'])
@@ -18,12 +19,8 @@ def vendas():
             # Quantos dias verá, se for 0, retorna todos os registros
             dias = request.args.get('dias')
 
-            if not dias:
-                cursor.execute("select * from vendas order by id desc")
-            else:
-                cursor.execute("select * from vendas where dia >= curdate() - interval %s day order by id desc", (int(dias),))
-
-            vendas = cursor.fetchall()
+            # Recebe todas as linhas no dado intervalo
+            vendas = utils.get_all_or_abort(cursor, 'vendas', dias)
             lista_vendas = []
 
             # Adiciona na lista um dicionário para cada venda
@@ -44,10 +41,9 @@ def vendas():
             # Recebe os dados
             registro = request.json
 
-            # Se estiver faltando alguma chave obrigatória no request, retorna 400
-            for chave in chaves_obrigatorias:
-                if chave not in registro:
-                    return jsonify({'message': 'Todos os campos obrigatórios devem ser preenchidos'}), 400
+            # Verifica se os campos do novo registros são aceitaveis e se todos os obrigatórios estão preenchidos
+            utils.is_request_ok(registro, chaves_obrigatorias+['comprador'], chaves_obrigatorias)
+
 
             cursor.execute("insert into vendas values (null, %s, %s, %s, %s, %s)",
                                     (registro.get('dia'),
@@ -57,9 +53,6 @@ def vendas():
                                      registro.get('comprador', '')))
             db.commit()
             return jsonify({'message': 'Venda cadastrada com sucesso!'})
-
-    except Exception as e:
-        return jsonify({'message': str(e)}), 500
 
     finally:
         # Fecha a conexão com o banco e o cursor
@@ -81,17 +74,11 @@ def venda(venda_id):
             data = request.json
 
             # Busca a linha na tabela pelo ID
-            cursor.execute("select * from vendas where id = %s", (venda_id,))
-            venda = cursor.fetchone()
+            utils.get_line_or_abort(cursor, 'vendas', venda_id)
 
-            # Se não houver dados do request, ou linha com o id fornecido, ou alguma chave que não exista na tabela, retorna error 400 ou 404
-            if not data:
-                return jsonify({'message': 'Nenhum dado enviado'}), 400
-            if not venda:
-                return jsonify({'message': 'Venda não encontrada'}), 404
-            for campo in data:
-                if campo not in chaves_obrigatorias and campo != 'comprador':
-                    return jsonify({'message': 'Campo inválido inserido'}), 400
+            # Verifica se o campo alterado é válido
+            utils.is_request_ok(data, chaves_obrigatorias+['comprador'])
+
 
             # Cria string com todos os campos, seguidos por "= %s" separados por ","
             campos_update = ', '.join([f"{campo} = %s" for campo in data.keys()])
@@ -107,12 +94,7 @@ def venda(venda_id):
         # Se o método for GET
         elif request.method == 'GET':
             # Busca a linha pelo ID
-            cursor.execute("select * from vendas where id = %s", (venda_id,))
-            venda = cursor.fetchone()
-
-            # Se não houver linha com o ID fornecido, retorna 404
-            if not venda:
-                return jsonify({'message': 'Venda não encontrada'}), 404
+            venda = utils.get_line_or_abort(cursor, 'vendas', venda_id)
             
             return jsonify({
                     'id': venda[0],
@@ -126,19 +108,11 @@ def venda(venda_id):
         # Se o método for DELETE
         else:
             # Busca a linha pelo id
-            cursor.execute("select * from vendas where id = %s", (venda_id,))
-            venda = cursor.fetchone()
-
-            # Se não achar a linha, retorna 404
-            if not venda:
-                return jsonify({'message': 'Venda não encontrada'}), 404
+            utils.get_line_or_abort(cursor, 'vendas', venda_id)
 
             cursor.execute("delete from vendas where id = %s", (venda_id,))
             db.commit()
             return jsonify({'message': 'Venda deletada com sucesso!'})
-
-    except Exception as e:
-        return jsonify({'message': str(e)}), 500
 
     finally:
         cursor.close()

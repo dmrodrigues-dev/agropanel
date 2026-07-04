@@ -1,9 +1,10 @@
 import database
+import utils
 from flask import Blueprint, jsonify, request
 
 compras_bp = Blueprint('compras_bp', __name__)
 
-chaves_obrigatorias = ('dia', 'produto_id', 'preco', 'qtd', 'fornecedor')
+chaves_obrigatorias = ['dia', 'produto_id', 'preco', 'qtd', 'fornecedor']
 
 # Rota para adicionar compra ou listar compras
 @compras_bp.route('/api/compras', methods=['GET', 'POST'])
@@ -18,12 +19,7 @@ def compras():
             # Quantos dias verá, se for 0, retorna todos os registros
             dias = request.args.get('dias')
 
-            if not dias:
-                cursor.execute("select * from compras order by id desc")
-            else:
-                cursor.execute("select * from compras where dia >= curdate() - interval %s day order by id desc", (int(dias),))
-
-            compras = cursor.fetchall()
+            compras = utils.get_all_or_abort(cursor, 'compras', dias)
             lista_compras = []
 
             # Adiciona dicionários na lista
@@ -44,10 +40,8 @@ def compras():
             # Recebe os dados enviados
             registro = request.json
 
-            # Se alguma chave da lista de obrigatórias não estiver no request, retorna erro 400
-            for chave in chaves_obrigatorias:
-                if chave not in registro:
-                    return jsonify({'message': 'Todos os campos obrigatórios devem ser preenchidos'}), 400
+            # Valida se todos os campos foram preenchidos e não há nenhum campo inválido
+            utils.is_request_ok(registro, chaves_obrigatorias, chaves_obrigatorias)
 
             cursor.execute("insert into compras values (null, %s, %s, %s, %s, %s)",
                                     (registro.get('dia'),
@@ -57,10 +51,6 @@ def compras():
                                      registro.get('fornecedor')))
             db.commit()
             return jsonify({'message': 'Registro cadastrado com sucesso!'})
-
-    except Exception as e:
-        # Se houver algum erro, retorna o erro e internal server error
-        return jsonify({'message': str(e)}), 500
 
     finally:
         # Fecha o cursor e a conexão com o banco
@@ -82,17 +72,11 @@ def compra(compra_id):
             data = request.json
 
             # Busca a linha na tabela pelo id
-            cursor.execute("select * from compras where id = %s", (compra_id,))
-            compra = cursor.fetchone()
+            utils.get_line_or_abort(cursor, 'compras', compra_id)
 
-            # Se não houver dados enviados, linha com o id recebido ou algum campo dos dados que não esteja na lista de chaves obrigatórias
-            if not data:
-                return jsonify({'message': 'Nenhum dado enviado'}), 400
-            if not compra:
-                return jsonify({'message': 'Compra não encontrada'}), 404
-            for campo in data:
-                if campo not in chaves_obrigatorias:
-                    return jsonify({'message': 'Campo inválido inserido'}), 400
+            # Valida se os dados recebidos são campos válidos
+            utils.is_request_ok(data, chaves_obrigatorias)
+
 
             # Criar string com todos os campos, seguidos por "= %s" separados por ","
             campos_update = ', '.join([f"{campo} = %s" for campo in data.keys()])
@@ -108,12 +92,7 @@ def compra(compra_id):
         # Se o método for GET
         elif request.method == 'GET':
             # Busca a linha pelo ID
-            cursor.execute('select * from compras where id = %s', (compra_id,))
-            compra = cursor.fetchone()
-
-            # Se não achar a linha com esse id, retorna 404
-            if not compra:
-                return jsonify({'message': 'Compra não encontrada'}), 404
+            compra = utils.get_line_or_abort(cursor, 'compras', compra_id)
             
             return jsonify({
                 'id': compra[0],
@@ -127,19 +106,11 @@ def compra(compra_id):
         # Se o método for DELETE
         else:
             # Busca a linha na tabela pelo ID
-            cursor.execute("select * from compras where id = %s", (compra_id,))
-            compra = cursor.fetchone()
-
-            # Se não achar a linha, retorna erro 404
-            if not compra:
-                return jsonify({'message': 'Compra não encontrada'}), 404
+            utils.get_line_or_abort(cursor, 'compras', compra_id)
 
             cursor.execute("delete from compras where id = %s", (compra_id,))
             db.commit()
             return jsonify({'message': 'Compra deletada com sucesso!'})
-
-    except Exception as e:
-        return jsonify({'message': str(e)}), 500
 
     finally:
         cursor.close()

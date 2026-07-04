@@ -1,4 +1,5 @@
 import database
+import utils
 from flask import Blueprint, jsonify, request
 
 produtos_bp = Blueprint('produtos', __name__)
@@ -17,9 +18,8 @@ def produtos():
             # Recebe os dados
             produto = request.json
 
-            # Se não houver chave 'nome' nos dados, retorna 400
-            if not 'nome' in produto:
-                return jsonify({'message': 'Insira um nome válido para o produto'}), 400
+            # Valida se o campo nome foi preenchido
+            utils.is_request_ok(produto, ['nome',])
 
             # Adiciona novo produto
             cursor.execute("insert into produtos values (null, %s)", (produto.get('nome'),))
@@ -29,8 +29,7 @@ def produtos():
         # Se o método for GET
         else:
             # Seleciona todos os produtos
-            cursor.execute('select * from produtos')
-            produtos = cursor.fetchall()
+            produtos = utils.get_all_or_abort(cursor, 'produtos')
             lista_produtos = []
 
             # Adiciona dicionário para cada produto na lista
@@ -41,9 +40,6 @@ def produtos():
                 })
 
             return jsonify(lista_produtos)
-
-    except Exception as e:
-        return jsonify({'message': str(e)}), 500
 
     finally:
         cursor.close()
@@ -64,14 +60,10 @@ def produto(product_id):
             data = request.json
 
             # Busca o produto pelo ID
-            cursor.execute("select * from produtos where id = %s", (product_id,))
-            produto = cursor.fetchone()
+            utils.get_line_or_abort(cursor, 'produtos', product_id)
 
-            # Se não houver produto com esse id no banco, ou nçao houver a chave 'nome' nos dados, retorna erro 404 ou 400
-            if not produto:
-                return jsonify({'message': 'Produto não encontrado'}), 404
-            if not 'nome' in data:
-                return jsonify({'message': 'Insira um novo nome válido'}), 400
+            # Valida se a alteração é no nome
+            utils.is_request_ok(data, ['nome',])
 
             # Atualiza 'nome' pelo id
             cursor.execute('update produtos set nome = %s where id = %s', (data['nome'], product_id))
@@ -81,12 +73,7 @@ def produto(product_id):
         # Se o método for DELETE
         elif request.method == 'DELETE':
             # Busca o produto pelo ID no banco
-            cursor.execute("select * from produtos where id = %s", (product_id,))
-            produto = cursor.fetchone()
-
-            # Se não achar o produto, retorna 404
-            if not produto:
-                return jsonify({'message': 'Produto não encontrado'}), 404
+            utils.get_line_or_abort(cursor, 'produtos', product_id)
 
             # Deleta o produto
             cursor.execute("delete from produtos where id = %s", (product_id,))
@@ -96,17 +83,9 @@ def produto(product_id):
         # Se o método for GET
         else:
             # Busca o produto pelo id no banco
-            cursor.execute("select * from produtos where id = %s", (product_id,))
-            produto = cursor.fetchone()
-
-            # Se não há produto com o id fornecido, retorna 404
-            if not produto:
-                return jsonify({'message': 'Produto não encontrado'}), 404
+            produto = utils.get_line_or_abort(cursor, 'produtos', product_id)
 
             return jsonify({'id': produto[0], 'nome': produto[1]})
-
-    except Exception as e:
-        return jsonify({'message': str(e)}), 500
 
     finally:
         cursor.close()
