@@ -1,4 +1,4 @@
-from blueprints import produtos, estatisticas, compras, vendas
+from blueprints import produtos, estatisticas, compras, vendas, reset_route
 import loggers
 from flask import Flask, jsonify
 from flask_cors import CORS
@@ -28,6 +28,7 @@ app.register_blueprint(produtos.produtos_bp)
 app.register_blueprint(estatisticas.estatisticas_bp)
 app.register_blueprint(compras.compras_bp)
 app.register_blueprint(vendas.vendas_bp)
+app.register_blueprint(reset_route.reset_bp)
 
 if __name__ == "__main__":
     app.run(debug=(loggers.ambiente is None))
