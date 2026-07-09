@@ -1,0 +1,16 @@
+name: Daily Seed Reset
+
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger seed reset
+        run: |
+          curl -f -X POST https://agropanel.onrender.com/api/seed/reset \
+            -H "Secret_token: ${{ secrets.SEED_SECRET_TOKEN }}"
