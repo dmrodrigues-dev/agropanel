@@ -16,7 +16,7 @@ def resetar():
         # Recuperar o registro mais recente do DB, na tabela vendas, e verificar se a data é a mesma de hj, se não for, executa o script reset_table.sql
 
         # Validar a chave secreta
-        chave_fornecida = request.headers.get('Secret_token')
+        chave_fornecida = request.headers.get('Secret-token')
         if not chave_fornecida or not secrets.compare_digest(os.getenv('SEED_SECRET_TOKEN'), chave_fornecida):
             return jsonify({'message': 'Sem permissão para acessar a rota.'}), 401
 

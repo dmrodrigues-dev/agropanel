@@ -13,4 +13,4 @@ jobs:
       - name: Trigger seed reset
         run: |
           curl -f -X POST https://agropanel.onrender.com/api/seed/reset \
-            -H "Secret_token: ${{ secrets.SEED_SECRET_TOKEN }}"
+            -H "Secret-token: ${{ secrets.SEED_SECRET_TOKEN }}"
