@@ -1,6 +1,5 @@
 truncate table produtos cascade;
 
--- Produtos
 INSERT INTO produtos(nome) VALUES
 ('Ração para bovinos'),
 ('Ração para equinos'),
