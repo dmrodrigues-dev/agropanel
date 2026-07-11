@@ -1,6 +1,7 @@
 import database
 import utils
 from flask import Blueprint, jsonify, request
+from sqlalchemy import text
 
 compras_bp = Blueprint('compras_bp', __name__)
 
@@ -9,31 +10,17 @@ chaves_obrigatorias = ['dia', 'produto_id', 'preco', 'qtd', 'fornecedor']
 # Rota para adicionar compra ou listar compras
 @compras_bp.route('/api/compras', methods=['GET', 'POST'])
 def compras():
-    # Conecta no DB e cria um cursor
-    db = database.pool.get_connection()
-    cursor = db.cursor()
+    # Com uma conexão da engine feita, execute o bloco
+    with database.engine.connect() as conn:
 
-    try:
         # Se o método for GET
         if request.method == 'GET':
             # Quantos dias verá, se for 0, retorna todos os registros
             dias = request.args.get('dias')
 
-            compras = utils.get_all_or_abort(cursor, 'compras', dias)
-            lista_compras = []
-
-            # Adiciona dicionários na lista
-            for compra in compras:
-                lista_compras.append({
-                    'id': compra[0],
-                    'dia': compra[1].strftime('%Y-%m-%d'),
-                    'produto_id': compra[2],
-                    'preco': compra[3],
-                    'qtd': compra[4],
-                    'fornecedor': compra[5]
-                })
-
-            return jsonify(lista_compras) # Lista de registros de compras
+            # Recebe todas as linhas no dado intervalo
+            compras = utils.get_all_or_abort(conn, 'compras', dias)
+            return jsonify([utils.type_casted_dict(dict(row._mapping)) for row in compras]) # Lista de registros de compras
 
         # Se o método for POST
         else:
@@ -44,80 +31,64 @@ def compras():
             utils.is_request_ok(registro, chaves_obrigatorias, chaves_obrigatorias)
 
             # Verifica se existe um produto com o ID fornecido
-            utils.get_line_or_abort(cursor, 'produtos', registro.get('produto_id'))
+            utils.get_line_or_abort(conn, 'produtos', registro.get('produto_id'))
 
-            cursor.execute("insert into compras values (null, %s, %s, %s, %s, %s)",
-                                    (registro.get('dia'),
-                                     registro.get('produto_id'),
-                                     registro.get('preco'),
-                                     registro.get('qtd'),
-                                     registro.get('fornecedor')))
-            db.commit()
-            return jsonify({'message': 'Registro cadastrado com sucesso!'})
-
-    finally:
-        # Fecha o cursor e a conexão com o banco
-        cursor.close()
-        db.close()
+            conn.execute(text("insert into compras(dia, produto_id, preco, qtd, fornecedor) values (:dia, :produto_id, :preco, :qtd, :fornecedor)"),{
+                'dia': registro.get('dia'),
+                'produto_id': registro.get('produto_id'),
+                'preco': registro.get('preco'),
+                'qtd': registro.get('qtd'),
+                'fornecedor': registro.get('fornecedor')
+            })
+            conn.commit()
+            return jsonify({'message': 'Compra cadastrado com sucesso!'})
 
 
 # Rota para alterar compra ou deletar compra
 @compras_bp.route('/api/compras/<int:compra_id>', methods=['PUT', 'GET', 'DELETE'])
 def compra(compra_id):
-    # Conecta no DB e cria um cursor
-    db = database.pool.get_connection()
-    cursor = db.cursor()
+    # Com uma conexão da engine feita, execute o bloco
+    with database.engine.connect() as conn:
 
-    try:
         # Se o método for PUT
         if request.method == 'PUT':
             # Recebe os dados
             data = request.json
 
             # Busca a linha na tabela pelo id
-            utils.get_line_or_abort(cursor, 'compras', compra_id)
+            utils.get_line_or_abort(conn, 'compras', compra_id)
 
             # Valida se os dados recebidos são campos válidos
             utils.is_request_ok(data, chaves_obrigatorias)
 
             # Se houver alteração no ID, verifica se o ID do produto é valido
             if 'produto_id' in data:
-                utils.get_line_or_abort(cursor, 'produtos', data.get('produto_id'))
+                utils.get_line_or_abort(conn, 'produtos', data.get('produto_id'))
 
-            # Criar string com todos os campos, seguidos por "= %s" separados por ","
-            campos_update = ', '.join([f"{campo} = %s" for campo in data.keys()])
-            # Cria lista com os valores enviados
-            valores = list(data.values())
-            # Adiciona o id no final da lista de valores, pois será usado para fazer a seleção da linha
-            valores.append(compra_id)
+            # Criar string com todos os campos, seguidos por "= :campo" separados por ","
+            campos_update = ', '.join([f"{campo} = :{campo}" for campo in data.keys()])
+            # Adicionar o item 'id' ao dicionário 'data'
+            data['id'] = compra_id
 
-            cursor.execute(f'update compras set {campos_update} where id = %s', tuple(valores))
-            db.commit()
+            conn.execute(text(f'update compras set {campos_update} where id = :id'),
+                         data)
+            conn.commit()
             return jsonify({'message': 'Compra atualizada com sucesso!'})
 
         # Se o método for GET
         elif request.method == 'GET':
             # Busca a linha pelo ID
-            compra = utils.get_line_or_abort(cursor, 'compras', compra_id)
+            compra = utils.get_line_or_abort(conn, 'compras', compra_id)
             
-            return jsonify({
-                'id': compra[0],
-                'dia': compra[1].strftime('%Y-%m-%d'),
-                'produto_id': compra[2],
-                'preco': compra[3],
-                'qtd': compra[4],
-                'fornecedor': compra[5]
-            })
+            # Retorna um dicionario convertendo o tipo decimal para float
+            return jsonify(utils.type_casted_dict(dict(compra._mapping)))
 
         # Se o método for DELETE
         else:
             # Busca a linha na tabela pelo ID
-            utils.get_line_or_abort(cursor, 'compras', compra_id)
+            utils.get_line_or_abort(conn, 'compras', compra_id)
 
-            cursor.execute("delete from compras where id = %s", (compra_id,))
-            db.commit()
+            conn.execute(text("delete from compras where id = :id"),
+                         {'id': compra_id})
+            conn.commit()
             return jsonify({'message': 'Compra deletada com sucesso!'})
-
-    finally:
-        cursor.close()
-        db.close()
