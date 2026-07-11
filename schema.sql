@@ -1,30 +1,29 @@
-create database commerce
-default char set utf8
-default collate utf8_general_ci;
 
-use commerce;
+create table produtos (
+  id bigint generated always as identity primary key,
+  nome varchar(80) not null
+);
 
-create table if not exists produtos (
-id smallint not null auto_increment,
-nome varchar(80) not null,
-primary key (id)) default char set utf8;
+CREATE TABLE compras (
+    id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    dia date NOT NULL,
+    produto_id bigint NOT NULL,
+    preco numeric(10,2) NOT NULL,
+    qtd integer NOT NULL,
+    fornecedor varchar(80) NOT NULL,
 
-create table if not exists compras (
-id int not null auto_increment,
-dia date not null,
-produto_id smallint not null,
-preco float not null,
-qtd smallint not null,
-fornecedor varchar(80) not null,
-primary key (id),
-foreign key (produto_id) references produtos(id)) default char set utf8;
+    FOREIGN KEY (produto_id)
+    REFERENCES produtos(id)
+);
 
-create table if not exists vendas (
-id int not null auto_increment,
-dia date not null,
-produto_id smallint not null,
-preco float not null,
-qtd smallint not null,
-comprador varchar(80),
-primary key (id),
-foreign key (produto_id) references produtos(id)) default char set utf8;
+CREATE TABLE vendas (
+    id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    dia date NOT NULL,
+    produto_id bigint NOT NULL,
+    preco numeric(10,2) NOT NULL,
+    qtd integer NOT NULL,
+    comprador varchar(80),
+
+    FOREIGN KEY (produto_id)
+    REFERENCES produtos(id)
+);
