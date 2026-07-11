@@ -1,6 +1,7 @@
 import database
 import utils
 from flask import Blueprint, jsonify, request
+from sqlalchemy import text
 
 vendas_bp = Blueprint('vendas', __name__)
 
@@ -9,32 +10,17 @@ chaves_obrigatorias = ['dia', 'produto_id', 'preco', 'qtd'] # Ultimo campo, "com
 # Rota para adicionar venda ou listar vendas
 @vendas_bp.route('/api/vendas', methods=['GET', 'POST'])
 def vendas():
-    # Cria cursor e conexão com DB
-    db = database.pool.get_connection()
-    cursor = db.cursor()
+    # Com uma conexão da engine feita, execute o bloco
+    with database.engine.connect() as conn:
 
-    try:
         # Se o método for GET
         if request.method == 'GET':
             # Quantos dias verá, se for 0, retorna todos os registros
             dias = request.args.get('dias')
 
             # Recebe todas as linhas no dado intervalo
-            vendas = utils.get_all_or_abort(cursor, 'vendas', dias)
-            lista_vendas = []
-
-            # Adiciona na lista um dicionário para cada venda
-            for venda in vendas:
-                lista_vendas.append({
-                    'id': venda[0],
-                    'dia': venda[1].strftime('%Y-%m-%d'),
-                    'produto_id': venda[2],
-                    'preco': venda[3],
-                    'qtd': venda[4],
-                    'comprador': venda[5]
-                })
-
-            return jsonify(lista_vendas)
+            vendas = utils.get_all_or_abort(conn, 'vendas', dias)
+            return jsonify([utils.type_casted_dict(dict(row._mapping)) for row in vendas])
 
         # Se o método for POST
         else:
@@ -45,80 +31,64 @@ def vendas():
             utils.is_request_ok(registro, chaves_obrigatorias+['comprador'], chaves_obrigatorias)
 
             # Verifica se existe um produto com o ID fornecido
-            utils.get_line_or_abort(cursor, 'produtos', registro.get('produto_id'))
+            utils.get_line_or_abort(conn, 'produtos', registro.get('produto_id'))
 
-            cursor.execute("insert into vendas values (null, %s, %s, %s, %s, %s)",
-                                    (registro.get('dia'),
-                                     registro.get('produto_id'),
-                                     registro.get('preco'),
-                                     registro.get('qtd'),
-                                     registro.get('comprador', '')))
-            db.commit()
+            conn.execute(text("insert into vendas(dia, produto_id, preco, qtd, comprador) values (:dia, :produto_id, :preco, :qtd, :comprador)"),{
+                'dia': registro.get('dia'),
+                'produto_id': registro.get('produto_id'),
+                'preco': registro.get('preco'),
+                'qtd': registro.get('qtd'),
+                'comprador': registro.get('comprador', '')
+            })
+            conn.commit()
             return jsonify({'message': 'Venda cadastrada com sucesso!'})
-
-    finally:
-        # Fecha a conexão com o banco e o cursor
-        cursor.close()
-        db.close()
 
 
 # Rota para alterar venda ou deletar vendas
 @vendas_bp.route('/api/vendas/<int:venda_id>', methods=['PUT', 'GET', 'DELETE'])
 def venda(venda_id):
-    # Cria conexão com banco e cursor
-    db = database.pool.get_connection()
-    cursor = db.cursor()
+    # Com uma conexão da engine feita, execute o bloco
+    with database.engine.connect() as conn:
 
-    try:
         # Se o método for PUT
         if request.method == 'PUT':
             # Recebe os dados
             data = request.json
 
             # Busca a linha na tabela pelo ID
-            utils.get_line_or_abort(cursor, 'vendas', venda_id)
+            utils.get_line_or_abort(conn, 'vendas', venda_id)
 
             # Verifica se o campo alterado é válido
             utils.is_request_ok(data, chaves_obrigatorias+['comprador'])
 
             # Se houver alteração no ID, verifica se existe um produto com o ID fornecido
             if 'produto_id' in data:
-                utils.get_line_or_abort(cursor, 'produtos', data.get('produto_id'))
+                utils.get_line_or_abort(conn, 'produtos', data.get('produto_id'))
 
-            # Cria string com todos os campos, seguidos por "= %s" separados por ","
-            campos_update = ', '.join([f"{campo} = %s" for campo in data.keys()])
-            # Cria lista com os valores enviados
-            valores = list(data.values())
-            # Adiciona o id no final da lista de valores, pois será usado para fazer a seleção da linha
-            valores.append(venda_id)
+            # Cria string com todos os campos, seguidos por "= :campo" separados por ","
+            campos_update = ', '.join([f"{campo} = :{campo}" for campo in data.keys()])
+            # Adicionar o item 'id' ao dicionário 'data'
+            data['id'] = venda_id
 
-            cursor.execute(f'update vendas set {campos_update} where id = %s', tuple(valores))
-            db.commit()
+            conn.execute(text(f'update vendas set {campos_update} where id = :id'),
+                         data)
+            conn.commit()
             return jsonify({'message': 'Venda atualizada com sucesso!'})
 
         # Se o método for GET
         elif request.method == 'GET':
             # Busca a linha pelo ID
-            venda = utils.get_line_or_abort(cursor, 'vendas', venda_id)
+            venda = utils.get_line_or_abort(conn, 'vendas', venda_id)
             
-            return jsonify({
-                    'id': venda[0],
-                    'dia': venda[1].strftime('%Y-%m-%d'),
-                    'produto_id': venda[2],
-                    'preco': venda[3],
-                    'qtd': venda[4],
-                    'comprador': venda[5]
-                })
+            # Retorna um dicionario convertendo o tipo decimal para float
+            return jsonify(utils.type_casted_dict(dict(venda._mapping)))
 
         # Se o método for DELETE
         else:
             # Busca a linha pelo id
-            utils.get_line_or_abort(cursor, 'vendas', venda_id)
+            utils.get_line_or_abort(conn, 'vendas', venda_id)
 
-            cursor.execute("delete from vendas where id = %s", (venda_id,))
-            db.commit()
+            conn.execute(text("delete from vendas where id = :id"),
+                         {'id': venda_id})
+            conn.commit()
             return jsonify({'message': 'Venda deletada com sucesso!'})
-
-    finally:
-        cursor.close()
-        db.close()

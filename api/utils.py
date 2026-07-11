@@ -1,10 +1,12 @@
 from flask import abort
 from datetime import date
+from sqlalchemy import text
+from decimal import Decimal
 
 # Retorna uma linha, ou invoca errorhandler se não encontra-la
-def get_line_or_abort(cursor, table, identificador):
-    cursor.execute(f'select * from {table}'+' where id = %s', (identificador,))
-    linha = cursor.fetchone()
+def get_line_or_abort(conexao, table, identificador):
+    query = conexao.execute(text(f'select * from {table}'+' where id = :identificador'), {'identificador':identificador})
+    linha = query.fetchone()
     if not linha:
         abort(404, 'Registro não encontrado')
     else:
@@ -12,15 +14,16 @@ def get_line_or_abort(cursor, table, identificador):
     
 
 # Retorna um vetor de linhas, ou invoca errorhandler se receber um intervalo de dias inválido
-def get_all_or_abort(cursor, table, intervalo=False):
+def get_all_or_abort(conexao, table, intervalo=False):
     if not intervalo or intervalo == '0':
-        cursor.execute(f"select * from {table} order by id desc")
+        query = conexao.execute(text(f"select * from {table} order by id desc"))
     elif intervalo and intervalo.isdigit():
-        cursor.execute(f"select * from {table} "+"where dia >= curdate() - interval %s day order by id desc", (int(intervalo),))
+        query = conexao.execute(text(f"select * from {table} "+"where dia >= current_date - (:dias * interval '1 day') order by id desc"), {'dias':int(intervalo)})
     else:
         abort(400, 'Intervalo de dias inválido.')
+        return
     
-    linhas = cursor.fetchall()
+    linhas = query.fetchall()
     return linhas
     
 
@@ -49,3 +52,13 @@ def month_and_year_validation(mes, ano):
     else:
         filtro = date.today().strftime('%m-%Y')
     return filtro
+
+
+# Type casting para float de todos os dados no formato decimal de um dicionario
+def type_casted_dict(dicionario):
+    for chave in dicionario.keys():
+
+        if isinstance(dicionario[chave], Decimal):
+            dicionario[chave] = float(dicionario[chave])
+
+    return dicionario
