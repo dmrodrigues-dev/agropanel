@@ -1,5 +1,6 @@
 import database
 from datetime import date
+from sqlalchemy import text
 import os
 import secrets
 from flask import Blueprint, jsonify, request
@@ -8,11 +9,9 @@ reset_bp = Blueprint('reset_bp', __name__)
 
 @reset_bp.route('/api/seed/reset', methods=['POST'])
 def resetar():
-    # Conecta no DB e cria um cursor
-    db = database.pool.get_connection()
-    cursor = db.cursor()
+    # Com uma conexão da engine feita, execute o bloco
+    with database.engine.connect() as conn:
 
-    try:
         # Recuperar o registro mais recente do DB, na tabela vendas, e verificar se a data é a mesma de hj, se não for, executa o script reset_table.sql
 
         # Validar a chave secreta
@@ -21,8 +20,8 @@ def resetar():
             return jsonify({'message': 'Sem permissão para acessar a rota.'}), 401
 
         # Recupera a data do registro mais recente do Banco de dados
-        cursor.execute("select dia from vendas order by dia desc limit 1")
-        last_date = cursor.fetchone()
+        query = conn.execute(text("select dia from vendas order by dia desc limit 1"))
+        last_date = query.fetchone()
         today = date.today()
 
         # Verifica se a data recuperada é a mesma de hoje
@@ -33,18 +32,10 @@ def resetar():
                 reset_seed = seed.read()
 
             # Execute os comandos do script e faça o commit do banco de dados
-            reset_seed = reset_seed.split(';')
-            for comando in reset_seed:
-                if not comando:
-                    continue
-                cursor.execute(comando.strip())
-
-            db.commit()
+            conn.execute(text(reset_seed))
+            conn.commit()
 
             return jsonify({'message': 'O Banco de dados foi atualizado.'})
 
         return jsonify({'message': 'O Banco de Dados está atualizado.'})
-
-    finally:
-        cursor.close()
-        db.close()
+    
