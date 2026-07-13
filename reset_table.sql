@@ -1,4 +1,4 @@
-truncate table produtos cascade;
+truncate table produtos, compras, vendas, restart identity cascade;
 
 INSERT INTO produtos(nome) VALUES
 ('Ração para bovinos'),
