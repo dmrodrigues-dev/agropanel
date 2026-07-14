@@ -69,8 +69,29 @@ function add_compra() {
     })
     .then((dados) => {
       alert(dados.message);
+      limpar_campos();
       carregar_compras();
     });
+}
+
+function limpar_campos() {
+  let div_but = document.getElementById("update-delete-compra");
+  let but_add = document.getElementById("but-add-compra");
+  let dia = document.getElementById("dia");
+  let produto = document.getElementById("produto_id");
+  let preco = document.getElementById("preco");
+  let qtd = document.getElementById("qtd");
+  let fornecedor = document.getElementById("fornecedor");
+
+  dia.value = "";
+  produto.value = "";
+  preco.value = "";
+  qtd.value = "";
+  fornecedor.value = "";
+  but_add.disabled = false;
+  div_but.style.display = "none";
+  toggle = false;
+  return;
 }
 
 function select_compra() {
@@ -88,14 +109,7 @@ function select_compra() {
     !linha ||
     (registro && registro.id == JSON.parse(linha.dataset.registro).id && toggle)
   ) {
-    dia.value = "";
-    produto.value = "";
-    preco.value = "";
-    qtd.value = "";
-    fornecedor.value = "";
-    but_add.disabled = false;
-    div_but.style.display = "none";
-    toggle = false;
+    limpar_campos();
     return;
   }
 
@@ -126,8 +140,7 @@ function del_compra() {
       })
       .then((dados) => {
         alert(dados.message);
-        let div_but = document.getElementById("update-delete-compra");
-        div_but.style.display = "none";
+        limpar_campos();
         carregar_compras();
       });
   }
@@ -164,8 +177,7 @@ function upt_compra() {
     })
     .then((dados) => {
       alert(dados.message);
-      let div_but = document.getElementById("update-delete-compra");
-      div_but.style.display = "none";
+      limpar_campos();
       carregar_compras();
     });
 }
