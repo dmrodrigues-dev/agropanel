@@ -5,7 +5,7 @@ function carregar_compras() {
         <th>ID</th>
         <th>Dia</th>
         <th>Produto</th>
-        <th>Preço</th>
+        <th>Preço(R$)</th>
         <th>Quantidade</th>
         <th>Fornecedor</th>
     </tr>
@@ -28,7 +28,7 @@ function carregar_compras() {
             <td>${compra.id}</td>
             <td>${compra.dia}</td>
             <td>${compra.produto_id}</td>
-            <td>${compra.preco}</td>
+            <td>${compra.preco.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
             <td>${compra.qtd}</td>
             <td>${compra.fornecedor}</td>
             `;
