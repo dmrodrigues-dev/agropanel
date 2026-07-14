@@ -1,7 +1,8 @@
 
 create table produtos (
   id bigint generated always as identity primary key,
-  nome varchar(80) not null
+  nome varchar(80) not null,
+  preco_de_venda numeric(10,2) not null
 );
 
 CREATE TABLE compras (
