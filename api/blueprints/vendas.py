@@ -5,7 +5,7 @@ from sqlalchemy import text
 
 vendas_bp = Blueprint('vendas', __name__)
 
-chaves_obrigatorias = ['dia', 'produto_id', 'preco', 'qtd'] # Ultimo campo, "comprador" é opcional
+chaves_obrigatorias = ['dia', 'produto_id', 'qtd'] # campos "preco" e "comprador" são opcionais
 
 # Rota para adicionar venda ou listar vendas
 @vendas_bp.route('/api/vendas', methods=['GET', 'POST'])
@@ -27,18 +27,25 @@ def vendas():
             # Recebe os dados
             registro = request.json
 
+            # None para campos preco e comprador, caso sejam ""
+            if str(registro.get('preco')).strip() == '':
+                registro['preco'] = None
+            if str(registro.get('comprador')).strip() == '':
+                registro['comprador'] = None
+
             # Verifica se os campos do novo registros são aceitaveis e se todos os obrigatórios estão preenchidos
-            utils.is_request_ok(registro, chaves_obrigatorias+['comprador'], chaves_obrigatorias)
+            utils.is_request_ok(registro, chaves_obrigatorias+['comprador', 'preco'], chaves_obrigatorias)
 
             # Verifica se existe um produto com o ID fornecido
             utils.get_line_or_abort(conn, 'produtos', registro.get('produto_id'))
 
-            conn.execute(text("insert into vendas(dia, produto_id, preco, qtd, comprador) values (:dia, :produto_id, :preco, :qtd, :comprador)"),{
+            # Se o preco estiver vazio, busca o preço padrão na tabela produtos
+            conn.execute(text("insert into vendas(dia, produto_id, preco, qtd, comprador) values (:dia, :produto_id, coalesce(:preco, (select preco_de_venda from produtos where id = :produto_id)), :qtd, :comprador)"),{
                 'dia': registro.get('dia'),
                 'produto_id': registro.get('produto_id'),
                 'preco': registro.get('preco'),
                 'qtd': registro.get('qtd'),
-                'comprador': registro.get('comprador', '')
+                'comprador': registro.get('comprador')
             })
             conn.commit()
             return jsonify({'message': 'Venda cadastrada com sucesso!'})
@@ -59,7 +66,7 @@ def venda(venda_id):
             utils.get_line_or_abort(conn, 'vendas', venda_id)
 
             # Verifica se o campo alterado é válido
-            utils.is_request_ok(data, chaves_obrigatorias+['comprador'])
+            utils.is_request_ok(data, chaves_obrigatorias+['comprador', 'preco'])
 
             # Se houver alteração no ID, verifica se existe um produto com o ID fornecido
             if 'produto_id' in data:
