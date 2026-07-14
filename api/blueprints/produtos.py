@@ -18,11 +18,12 @@ def produtos():
             produto = request.json
 
             # Valida se o campo nome foi preenchido
-            utils.is_request_ok(produto, ['nome',])
+            utils.is_request_ok(produto, ['nome', 'preco_de_venda'], ['nome', 'preco_de_venda'])
 
             # Adiciona novo produto
-            conn.execute(text("insert into produtos(nome) values (:nome)"),
-                         {'nome':produto.get('nome')})
+            conn.execute(text("insert into produtos(nome, preco_de_venda) values (:nome, :preco_de_venda)"),
+                         {'nome':produto.get('nome'),
+                          'preco_de_venda':produto.get('preco_de_venda')})
             conn.commit()
             return jsonify({'message': 'Produto cadastrado com sucesso!'})
 
@@ -32,7 +33,7 @@ def produtos():
             produtos = utils.get_all_or_abort(conn, 'produtos')
 
             # Retorna uma lsta de dicionários para cada item retornado
-            return jsonify([dict(row._mapping) for row in produtos])
+            return jsonify([utils.type_casted_dict(dict(row._mapping)) for row in produtos])
 
 
 # Rota para alterar, deletar ou buscar por ID (precisa de ID)
@@ -50,11 +51,16 @@ def produto(product_id):
             utils.get_line_or_abort(conn, 'produtos', product_id)
 
             # Valida se a alteração é no nome
-            utils.is_request_ok(data, ['nome',])
+            utils.is_request_ok(data, ['nome','preco_de_venda'])
 
-            # Atualiza 'nome' pelo id
-            conn.execute(text('update produtos set nome = :nome where id = :id'),
-                         {'nome': data['nome'], 'id': product_id})
+            # Criar string com todos os campos, seguidos por "= :campo" separados por ","
+            campos_update = ', '.join([f"{campo} = :{campo}" for campo in data.keys()])
+            # Adicionar o item 'id' ao dicionário 'data'
+            data['id'] = product_id
+
+            conn.execute(text(f'update produtos set {campos_update} where id = :id'),
+                         data)
+
             conn.commit()
             return jsonify({'message': 'Produto atualizado com sucesso!'})
 
@@ -73,4 +79,4 @@ def produto(product_id):
         else:
             # Busca o produto pelo id no banco
             produto = utils.get_line_or_abort(conn, 'produtos', product_id)
-            return jsonify(dict(produto._mapping))
+            return jsonify(utils.type_casted_dict(dict(produto._mapping)))
