@@ -5,7 +5,7 @@ function carregar_vendas() {
         <th>ID</th>
         <th>Dia</th>
         <th>Produto</th>
-        <th>Preço</th>
+        <th>Preço(R$)</th>
         <th>Quantidade</th>
         <th>Comprador</th>
     </tr>
@@ -28,7 +28,7 @@ function carregar_vendas() {
             <td>${venda.id}</td>
             <td>${venda.dia}</td>
             <td>${venda.produto_id}</td>
-            <td>${venda.preco}</td>
+            <td>${venda.preco.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
             <td>${venda.qtd}</td>
             <td>${venda.comprador}</td>
             `;
@@ -45,8 +45,8 @@ function add_venda() {
   const qtd = document.getElementById("qtd").value;
   const comprador = document.getElementById("comprador").value;
 
-  if (!dia || !produto_id || !preco || !qtd) {
-    alert("Todos os campos precisam ser preenchidos.");
+  if (!dia || !produto_id || !qtd) {
+    alert("Todos os campos * precisam ser preenchidos.");
     return;
   }
 
@@ -69,8 +69,29 @@ function add_venda() {
     })
     .then((dados) => {
       alert(dados.message);
+      limpar_campos();
       carregar_vendas();
     });
+}
+
+function limpar_campos() {
+  let div_but = document.getElementById("update-delete-venda");
+  let but_add = document.getElementById("but-add-venda");
+  let dia = document.getElementById("dia");
+  let produto = document.getElementById("produto_id");
+  let preco = document.getElementById("preco");
+  let qtd = document.getElementById("qtd");
+  let comprador = document.getElementById("comprador");
+
+  dia.value = "";
+  produto.value = "";
+  preco.value = "";
+  qtd.value = "";
+  comprador.value = "";
+  but_add.disabled = false;
+  div_but.style.display = "none";
+  toggle = false;
+  return;
 }
 
 function select_venda() {
@@ -88,14 +109,7 @@ function select_venda() {
     !linha ||
     (registro && registro.id == JSON.parse(linha.dataset.registro).id && toggle)
   ) {
-    dia.value = "";
-    produto.value = "";
-    preco.value = "";
-    qtd.value = "";
-    comprador.value = "";
-    but_add.disabled = false;
-    div_but.style.display = "none";
-    toggle = false;
+    limpar_campos();
     return;
   }
 
@@ -126,8 +140,7 @@ function del_venda() {
       })
       .then((dados) => {
         alert(dados.message);
-        let div_but = document.getElementById("update-delete-venda");
-        div_but.style.display = "none";
+        limpar_campos();
         carregar_vendas();
       });
   }
@@ -164,8 +177,7 @@ function upt_venda() {
     })
     .then((dados) => {
       alert(dados.message);
-      let div_but = document.getElementById("update-delete-venda");
-      div_but.style.display = "none";
+      limpar_campos();
       carregar_vendas();
     });
 }
