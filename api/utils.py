@@ -57,8 +57,11 @@ def month_and_year_validation(mes, ano):
 # Type casting para float de todos os dados no formato decimal de um dicionario
 def type_casted_dict(dicionario):
     for chave in dicionario.keys():
-
+        
         if isinstance(dicionario[chave], Decimal):
             dicionario[chave] = float(dicionario[chave])
+
+        elif isinstance(dicionario[chave], date):
+            dicionario[chave] = dicionario[chave].strftime('%Y-%m-%d')
 
     return dicionario
