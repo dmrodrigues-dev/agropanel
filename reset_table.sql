@@ -1,15 +1,15 @@
 truncate table produtos, compras, vendas restart identity cascade;
 
-INSERT INTO produtos(nome) VALUES
-('Ração para bovinos'),
-('Ração para equinos'),
-('Ração para aves'),
-('Suplemento mineral'),
-('Vacina febre aftosa'),
-('Sal mineral'),
-('Antiparasitário'),
-('Cama de frango'),
-('Concentrado proteico');
+INSERT INTO produtos(nome, preco_de_venda) VALUES
+('Ração para bovinos', 150),
+('Ração para equinos', 120),
+('Ração para aves', 80),
+('Suplemento mineral', 55),
+('Vacina febre aftosa', 20),
+('Sal mineral', 40),
+('Antiparasitário', 30),
+('Cama de frango', 24),
+('Concentrado proteico', 95);
 
 INSERT INTO compras(dia, produto_id, preco, qtd, fornecedor) VALUES
 (current_date - interval '23 days' , 1, 120.00, 50, 'AgroForte'),
