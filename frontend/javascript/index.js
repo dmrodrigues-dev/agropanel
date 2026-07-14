@@ -5,6 +5,7 @@ function carregar_produtos() {
     <tr>
         <th>ID</th>
         <th>Nome</th>
+        <th>Preço(R$)</th>
     </tr>`;
 
   fetch(`${window.API_URL}/api/produtos`, {
@@ -23,6 +24,7 @@ function carregar_produtos() {
         linha.innerHTML = `
                 <td>${produto.id}</td>
                 <td>${produto.nome}</td>
+                <td>${produto.preco_de_venda.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 `;
 
         linha.dataset.registro = JSON.stringify(produto);
@@ -35,15 +37,19 @@ function carregar_produtos() {
 // Função para adicionar produto ao banco
 function add_produto() {
   const nome = document.getElementById("nome").value;
-  if (!nome) {
-    alert("Insira um nome válido!");
+  const preco = document.getElementById("preco").value;
+  if (!nome || !preco) {
+    alert("Todos os campos precisam ser preenchidos");
     return;
   }
 
   fetch(`${window.API_URL}/api/produtos`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ nome: nome }),
+    body: JSON.stringify({
+      nome: nome,
+      preco_de_venda: preco,
+    }),
   })
     .then((resposta) => {
       if (!resposta.ok) {
@@ -53,8 +59,23 @@ function add_produto() {
     })
     .then((dados) => {
       alert(dados.message);
+      limpar_campos();
       carregar_produtos();
     });
+}
+
+function limpar_campos() {
+  let div_but = document.getElementById("update-delete-produto");
+  let but_add = document.getElementById("but-add-produto");
+  let nome = document.getElementById("nome");
+  let preco = document.getElementById("preco");
+
+  nome.value = "";
+  preco.value = null;
+  div_but.style.display = "none";
+  but_add.disabled = false;
+  toggle = false;
+  return;
 }
 
 function select_produto() {
@@ -62,20 +83,19 @@ function select_produto() {
   let div_but = document.getElementById("update-delete-produto");
   let but_add = document.getElementById("but-add-produto");
   let nome = document.getElementById("nome");
+  let preco = document.getElementById("preco");
 
   if (
     !linha ||
     (registro && registro.id == JSON.parse(linha.dataset.registro).id && toggle)
   ) {
-    nome.value = "";
-    div_but.style.display = "none";
-    but_add.disabled = false;
-    toggle = false;
+    limpar_campos();
     return;
   }
 
   registro = JSON.parse(linha.dataset.registro);
   nome.value = registro.nome;
+  preco.value = registro.preco_de_venda;
   but_add.disabled = true;
   toggle = true;
   div_but.style.display = "block";
@@ -97,8 +117,7 @@ function del_produto() {
       })
       .then((dados) => {
         alert(dados.message);
-        let div_but = document.getElementById("update-delete-produto");
-        div_but.style.display = "none";
+        limpar_campos();
         carregar_produtos();
       });
   }
@@ -106,15 +125,19 @@ function del_produto() {
 
 function upt_produto() {
   const nome = document.getElementById("nome").value;
-  if (!nome) {
-    alert("Insira um nome válido.");
+  const preco = document.getElementById("preco").value;
+  if (!nome || !preco) {
+    alert("Preencha todos os campos obrigatórios");
     return;
   }
 
   fetch(`${window.API_URL}/api/produtos/${registro.id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ nome: nome }),
+    body: JSON.stringify({
+      nome: nome,
+      preco_de_venda: preco,
+    }),
   })
     .then((resposta) => {
       if (!resposta.ok) {
@@ -124,8 +147,7 @@ function upt_produto() {
     })
     .then((dados) => {
       alert(dados.message);
-      let div_but = document.getElementById("update-delete-produto");
-      div_but.style.display = "none";
+      limpar_campos();
       carregar_produtos();
     });
 }
@@ -152,15 +174,15 @@ function carregar_estatisticas() {
     .then((dados) => {
       receita.innerHTML = `
       <h2>Receita</h2>
-      <p>${dados.receita}</p>`;
+      <p>${dados.receita.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>`;
 
       despesa.innerHTML = `
       <h2>Despesa</h2>
-      <p>${dados.despesa}</p>`;
+      <p>${dados.despesa.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>`;
 
       lucro.innerHTML = `
       <h2>Lucro</h2>
-      <p>${dados.lucro}</p>`;
+      <p>${dados.lucro.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>`;
 
       carregar_grafico(dados.vendaveis);
     });
