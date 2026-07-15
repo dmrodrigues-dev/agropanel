@@ -42,6 +42,15 @@ def is_request_ok(dados, chaves_possiveis, chaves_obrigatorias=False):
                 abort(400, 'Campo obrigatório permaneceu vazio')
     
 
+# Valida qtd e preco específicos num dicionario
+def is_request_non_negative(dados):
+    for campo in dados:
+        if campo in ['preco', 'preco_de_venda', 'qtd']:
+            dado = dados[campo]
+            if dado is not None and str(dado).strip() != '' and float(dado) < 0:
+                abort(400, 'Números negativos não são válidos.')
+
+
 # Retorna uma string para filtrar uma query, ou invoca errorhandler se os parametros forem inválidos
 def month_and_year_validation(mes, ano):
     if mes and ano:
