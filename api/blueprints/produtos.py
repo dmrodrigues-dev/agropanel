@@ -20,6 +20,9 @@ def produtos():
             # Valida se o campo nome foi preenchido
             utils.is_request_ok(produto, ['nome', 'preco_de_venda'], ['nome', 'preco_de_venda'])
 
+            # Valida se o preco_de_venda é positivo
+            utils.is_request_non_negative(produto)
+
             # Adiciona novo produto
             conn.execute(text("insert into produtos(nome, preco_de_venda) values (:nome, :preco_de_venda)"),
                          {'nome':produto.get('nome'),
@@ -52,6 +55,9 @@ def produto(product_id):
 
             # Valida se a alteração é no nome
             utils.is_request_ok(data, ['nome','preco_de_venda'])
+
+            # Valida se tem preco_de_venda positivo
+            utils.is_request_non_negative(data)
 
             # Criar string com todos os campos, seguidos por "= :campo" separados por ","
             campos_update = ', '.join([f"{campo} = :{campo}" for campo in data.keys()])

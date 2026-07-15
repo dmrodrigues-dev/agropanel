@@ -30,6 +30,9 @@ def compras():
             # Valida se todos os campos foram preenchidos e não há nenhum campo inválido
             utils.is_request_ok(registro, chaves_obrigatorias, chaves_obrigatorias)
 
+            # Valida se tem preco_de_venda positivo
+            utils.is_request_non_negative(registro)
+
             # Verifica se existe um produto com o ID fornecido
             utils.get_line_or_abort(conn, 'produtos', registro.get('produto_id'))
 
@@ -60,6 +63,9 @@ def compra(compra_id):
 
             # Valida se os dados recebidos são campos válidos
             utils.is_request_ok(data, chaves_obrigatorias)
+
+            # Valida se tem preco_de_venda positivo
+            utils.is_request_non_negative(data)
 
             # Se houver alteração no ID, verifica se o ID do produto é valido
             if 'produto_id' in data:

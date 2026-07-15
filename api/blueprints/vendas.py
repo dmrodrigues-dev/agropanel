@@ -36,6 +36,9 @@ def vendas():
             # Verifica se os campos do novo registros são aceitaveis e se todos os obrigatórios estão preenchidos
             utils.is_request_ok(registro, chaves_obrigatorias+['comprador', 'preco'], chaves_obrigatorias)
 
+            # Valida se tem preco_de_venda positivo
+            utils.is_request_non_negative(registro)
+
             # Verifica se existe um produto com o ID fornecido
             utils.get_line_or_abort(conn, 'produtos', registro.get('produto_id'))
 
@@ -67,6 +70,9 @@ def venda(venda_id):
 
             # Verifica se o campo alterado é válido
             utils.is_request_ok(data, chaves_obrigatorias+['comprador', 'preco'])
+
+            # Valida se tem preco_de_venda positivo
+            utils.is_request_non_negative(data)
 
             # Se houver alteração no ID, verifica se existe um produto com o ID fornecido
             if 'produto_id' in data:
