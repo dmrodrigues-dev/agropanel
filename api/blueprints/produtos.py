@@ -1,6 +1,6 @@
 import database
 import utils
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, abort
 from sqlalchemy import text
 
 produtos_bp = Blueprint('produtos', __name__)
@@ -16,6 +16,10 @@ def produtos():
         if request.method == 'POST':
             # Recebe os dados
             produto = request.json
+
+            # Se receber uma string vazia no preco_de_venda, aborta com erro 400
+            if str(produto.get('preco_de_venda')).strip() == '':
+                abort(400, 'O preço não pode estar vazio.')
 
             # Valida se o campo nome foi preenchido
             utils.is_request_ok(produto, ['nome', 'preco_de_venda'], ['nome', 'preco_de_venda'])
@@ -52,6 +56,10 @@ def produto(product_id):
 
             # Busca o produto pelo ID
             utils.get_line_or_abort(conn, 'produtos', product_id)
+
+            # Se receber uma string vazia no preco_de_venda, aborta com erro 400
+            if str(data.get('preco_de_venda')).strip() == '':
+                abort(400, 'O preço não pode estar vazio.')
 
             # Valida se a alteração é no nome
             utils.is_request_ok(data, ['nome','preco_de_venda'])
