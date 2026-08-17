@@ -6,6 +6,7 @@ function carregar_produtos() {
         <th>ID</th>
         <th>Nome</th>
         <th>Preço(R$)</th>
+        <th>Estoque</th>
     </tr>`;
 
   fetch(`${window.API_URL}/api/produtos`, {
@@ -25,6 +26,7 @@ function carregar_produtos() {
                 <td>${produto.id}</td>
                 <td>${produto.nome}</td>
                 <td>${produto.preco_de_venda.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
+                <td>${produto.estoque}</td>
                 `;
 
         linha.dataset.registro = JSON.stringify(produto);
