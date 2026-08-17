@@ -1,20 +1,20 @@
 truncate table produtos, compras, vendas restart identity cascade;
 
-INSERT INTO produtos(nome, preco_de_venda) VALUES
-('Ração para bovinos', 150),
-('Ração para equinos', 120),
-('Ração para aves', 80),
-('Suplemento mineral', 55),
-('Vacina febre aftosa', 20),
-('Sal mineral', 40),
-('Antiparasitário', 30),
-('Cama de frango', 24),
-('Concentrado proteico', 95);
+INSERT INTO produtos(nome, preco_de_venda, estoque) VALUES
+('Ração para bovinos', 150, 0),
+('Ração para equinos', 120, 0),
+('Ração para aves', 80, 0),
+('Suplemento mineral', 55, 0),
+('Vacina febre aftosa', 20, 0),
+('Sal mineral', 40, 0),
+('Antiparasitário', 30, 0),
+('Cama de frango', 24, 0),
+('Concentrado proteico', 95, 0);
 
 INSERT INTO compras(dia, produto_id, preco, qtd, fornecedor) VALUES
-(current_date - interval '23 days' , 1, 120.00, 50, 'AgroForte'),
+(current_date - interval '23 days' , 1, 120.00, 70, 'AgroForte'),
 (current_date - interval '22 days', 2, 95.50, 30, 'NutriPlus'),
-(current_date - interval '20 days', 3, 60.00, 80, 'AviSupply'),
+(current_date - interval '20 days', 3, 60.00, 150, 'AviSupply'),
 (current_date - interval '18 days', 4, 45.00, 100, 'MineraisBR'),
 (current_date - interval '15 days', 5, 15.00, 200, 'VetFarma'),
 (current_date - interval '13 days', 6, 30.00, 60, 'MineraisBR'),
@@ -32,4 +32,4 @@ INSERT INTO vendas(dia, produto_id, preco, qtd, comprador) VALUES
 (current_date - interval '8 days', 3, 80.00, 60, 'Granja Caipira'),
 (current_date - interval '6 days', 7, 30.00, 80, 'Haras São José'),
 (current_date - interval '3 days', 9, 95.00, 35, 'Fazenda Boa Vista'),
-(current_date, 1, 150.00, 20, 'Granja Caipira');
+(current_date, 1, 150.00, 20, 'Fazenda Boa Vista');
