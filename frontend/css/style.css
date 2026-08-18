@@ -1,133 +1,322 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+:root {
+  --primary: #10b981;
+  --primary-hover: #34d399;
+  --primary-light: rgba(16, 185, 129, 0.15);
+  --bg-main: #0b0f19;
+  --card-bg: #151c2c;
+  --text-dark: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: #26334d;
+  --danger: #f87171;
+  --danger-hover: #ef4444;
+  --warning: #f59e0b;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --radius: 12px;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Roboto", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 body {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   min-height: 100vh;
+  background-color: var(--bg-main);
+  color: var(--text-dark);
 }
 
+/* Header */
 header {
-  height: 7vh;
+  height: 65px;
   width: 100%;
-  padding: 0 2.5vw;
+  padding: 0 2rem;
   display: flex;
-  flex-direction: row;
+  align-items: center;
   justify-content: space-between;
-  background-color: aqua;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--shadow);
 }
 
-header * {
-  align-content: center;
+header h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.5px;
 }
 
-header ul {
-  width: 30vw;
+header nav ul {
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
+  gap: 1.5rem;
   list-style: none;
 }
 
-header a,
-a:visited {
+header a {
   text-decoration: none;
-  font-size: 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
 }
 
+header a:hover {
+  color: var(--primary);
+}
+
+/* Main Layout */
 main {
   flex: 1;
+  padding: 2rem;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .main-home {
-  display: flex;
-  flex-direction: row;
-  flex: 1;
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* Cards & Layout Containers */
+.card,
+.aside,
+.dashboards {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+/* Compacta os espaçamentos internos e fonte da tabela do aside */
+.aside th,
+.aside td {
+  padding: 0.6rem 0.3rem;
+  font-size: 0.82rem;
+}
+
+/* Garante que a tabela respeite a largura do container */
+.aside table {
+  width: 100%;
+  word-break: break-word;
 }
 
 .dashboards {
-  max-width: 100%;
-  width: 100%;
-  padding: 5vh 2vw;
-  align-self: center;
-  justify-items: center;
-  text-align: center;
-}
-
-canvas {
-  max-width: 90%;
-  width: 100%;
-  max-height: 90%;
-  height: 100%;
-}
-
-.statistic-cards {
   display: flex;
-  flex-direction: row;
-  justify-content: space-around;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Inputs & Form Styling */
+.form-group,
+#add-produto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.add-venda,
+.add-compra {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+input[type="month"] {
   width: 100%;
-  padding-top: 5vh;
+  padding: 0.65rem 0.85rem;
+  background-color: var(--bg-main);
+  color: var(--text-dark);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.small-card {
-  background-color: blueviolet;
-  width: 10vw;
+/* Ajuste nos ícones nativos de calendário/mês para o tema escuro */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="month"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8);
 }
 
-.small-card p {
-  font-size: 25px;
+input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
 }
 
-.card {
-  background-color: blue;
-  justify-items: center;
-  padding: 5vh 0;
+/* Buttons */
+input[type="button"],
+button {
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.aside {
-  max-width: 40vw;
+#but-add-produto,
+#but-add-venda,
+#but-add-compra {
+  background-color: var(--primary);
+  color: #0b0f19;
+}
+
+#but-add-produto:hover,
+#but-add-venda:hover,
+#but-add-compra:hover {
+  background-color: var(--primary-hover);
+}
+
+#update-delete-produto,
+#update-delete-venda,
+#update-delete-compra {
+  display: none;
+  gap: 0.5rem;
+}
+
+#update-delete-produto input[value="Alterar"],
+#update-delete-venda input[value="Alterar"],
+#update-delete-compra input[value="Alterar"] {
+  background-color: var(--warning);
+  color: #0b0f19;
+  flex: 1;
+}
+
+#update-delete-produto input[value="Deletar"],
+#update-delete-venda input[value="Deletar"],
+#update-delete-compra input[value="Deletar"] {
+  background-color: var(--danger);
+  color: #0b0f19;
+  flex: 1;
+}
+
+/* Tables */
+table {
   width: 100%;
-}
-
-#table-compras,
-#table-vendas,
-#table-produtos {
-  background-color: red;
-  margin-bottom: 5vh;
-  border-spacing: 2vw 2vh;
-  text-align: center;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
 }
 
 th,
 td {
-  background-color: aliceblue;
-  padding: 1vh 1vw;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
 }
 
-#update-delete-produto,
-#update-delete-compra,
-#update-delete-venda {
-  display: none;
+th {
+  background-color: var(--bg-main);
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
 }
 
-footer {
-  padding-top: 1vh;
+tr:hover td {
+  background-color: var(--primary-light);
+  cursor: pointer;
+}
+
+/* Statistics Cards */
+.statistic-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
   width: 100%;
-  background-color: aquamarine;
+}
+
+.small-card {
+  background-color: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: left;
+}
+
+.small-card h2 {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.small-card p {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+#lucro p {
+  color: var(--primary);
+}
+#despesa p {
+  color: var(--danger);
+}
+
+/* Chart Area */
+canvas {
+  max-height: 350px !important;
+  width: 100% !important;
+}
+
+/* Footer */
+footer {
+  padding: 1.5rem 2rem;
+  background-color: var(--card-bg);
+  border-top: 1px solid var(--border);
   text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+footer h2 {
+  font-size: 0.95rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
 }
 
 footer ul {
   display: flex;
-  margin: 2vh 0;
-  flex-direction: row;
-  width: 70vw;
-  justify-self: center;
-  justify-content: space-around;
+  justify-content: center;
+  gap: 1.5rem;
   list-style: none;
+}
+
+footer a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .main-home {
+    grid-template-columns: 1fr;
+  }
+  .statistic-cards {
+    grid-template-columns: 1fr;
+  }
 }

@@ -202,7 +202,38 @@ function carregar_grafico(dados) {
     type: "bar",
     data: {
       labels: labels,
-      datasets: [{ label: "Receita por produto", data: values }],
+      datasets: [
+        {
+          label: "Receita por produto (R$)",
+          data: values,
+          backgroundColor: "#10b981",
+          hoverBackgroundColor: "#34d399",
+          borderRadius: 6,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: "#151c2c",
+          titleColor: "#f8fafc",
+          bodyColor: "#f8fafc",
+          borderColor: "#26334d",
+          borderWidth: 1,
+        },
+      },
+      scales: {
+        y: {
+          grid: { color: "#26334d" },
+          ticks: { color: "#94a3b8" },
+        },
+        x: {
+          grid: { display: false },
+          ticks: { color: "#94a3b8" },
+        },
+      },
     },
   });
 }

@@ -4,14 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vendas</title>
+    <title>Vendas - Agropanel</title>
     <script src="/frontend/javascript/config.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-        rel="stylesheet">
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/style.css">
 </head>
 
@@ -29,36 +26,34 @@
 
     <main>
         <section class="card">
-            <table id="table-vendas">
-            </table>
+            <table id="table-vendas"></table>
 
             <div class="add-venda">
                 <input type="date" name="dia" id="dia">
-                <input type="number" name="produto" id="produto_id">
-                <input type="number" name="preco" id="preco">
-                <input type="number" name="qtd" id="qtd">
-                <input type="text" name="comprador" id="comprador">
+                <input type="number" name="produto" id="produto_id" placeholder="ID do Produto">
+                <input type="number" name="preco" id="preco" placeholder="Preço de Venda (R$)">
+                <input type="number" name="qtd" id="qtd" placeholder="Quantidade">
+                <input type="text" name="comprador" id="comprador" placeholder="Nome do Comprador">
 
-                <input type="button" value="Adicionar" id="but-add-venda" onclick="add_venda()">
+                <input type="button" value="Adicionar Venda" id="but-add-venda" onclick="add_venda()">
                 <div id="update-delete-venda">
                     <input type="button" value="Alterar" onclick="upt_venda()">
                     <input type="button" value="Deletar" onclick="del_venda()">
                 </div>
             </div>
-
         </section>
     </main>
 
     <footer>
         <h2>Desenvolvido por dmrodrigues-dev</h2>
         <ul>
-            <li><a href="link do github">github</a></li>
-            <li><a href="link do linkedin">linkedin</a></li>
-            <li><a href="email"></a>email</li>
+            <li><a href="#">GitHub</a></li>
+            <li><a href="#">LinkedIn</a></li>
+            <li><a href="#">E-mail</a></li>
         </ul>
     </footer>
-</body>
 
-<script src="javascript/vendas.js"></script>
+    <script src="javascript/vendas.js"></script>
+</body>
 
 </html>
