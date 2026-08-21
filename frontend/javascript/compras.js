@@ -13,12 +13,12 @@ function carregar_compras() {
 
   fetch(`${window.API_URL}/api/compras`, {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
   })
     .then((resposta) => {
       if (!resposta.ok) {
         throw new Error("Erro ao recuperar compras.");
       }
+      loading.style.display = "none";
       return resposta.json();
     })
     .then((dados) => {
@@ -35,6 +35,14 @@ function carregar_compras() {
         linha.dataset.registro = JSON.stringify(compra);
         tabela.appendChild(linha);
       }
+    })
+    .catch(() => {
+      loading.innerHTML = `
+      <div id="loading">
+        <h2>Não foi possível conectar ao servidor</h2>
+        <p>Verifique sua conexão e tente novamente.</p>
+        <button onclick="location.reload()">Recarregar</button>
+      </div>`;
     });
 }
 
@@ -184,5 +192,6 @@ function upt_compra() {
 
 let registro, toggle;
 let tabela = document.getElementById("table-compras");
+let loading = document.getElementById("loading-modal");
 tabela.addEventListener("click", select_compra);
 carregar_compras();

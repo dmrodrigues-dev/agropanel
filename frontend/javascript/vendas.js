@@ -13,12 +13,12 @@ function carregar_vendas() {
 
   fetch(`${window.API_URL}/api/vendas`, {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
   })
     .then((resposta) => {
       if (!resposta.ok) {
         throw new Error("Erro ao recuperar vendas.");
       }
+      loading.style.display = "none";
       return resposta.json();
     })
     .then((dados) => {
@@ -35,6 +35,14 @@ function carregar_vendas() {
         linha.dataset.registro = JSON.stringify(venda);
         tabela.appendChild(linha);
       }
+    })
+    .catch(() => {
+      loading.innerHTML = `
+      <div id="loading">
+        <h2>Não foi possível conectar ao servidor</h2>
+        <p>Verifique sua conexão e tente novamente.</p>
+        <button onclick="location.reload()">Recarregar</button>
+      </div>`;
     });
 }
 
@@ -184,5 +192,6 @@ function upt_venda() {
 
 let registro, toggle;
 let tabela = document.getElementById("table-vendas");
+let loading = document.getElementById("loading-modal");
 tabela.addEventListener("click", select_venda);
 carregar_vendas();

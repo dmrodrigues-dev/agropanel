@@ -11,12 +11,12 @@ function carregar_produtos() {
 
   fetch(`${window.API_URL}/api/produtos`, {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
   })
     .then((resposta) => {
       if (!resposta.ok) {
         throw new Error("Erro ao recuperar arquivos");
       }
+      loading.style.display = "none";
       return resposta.json();
     })
     .then((dados) => {
@@ -33,6 +33,14 @@ function carregar_produtos() {
 
         tabela.appendChild(linha);
       }
+    })
+    .catch(() => {
+      loading.innerHTML = `
+      <div id="loading">
+        <h2>Não foi possível conectar ao servidor</h2>
+        <p>Verifique sua conexão e tente novamente.</p>
+        <button onclick="location.reload()">Recarregar</button>
+      </div>`;
     });
 }
 
@@ -165,7 +173,6 @@ function carregar_estatisticas() {
 
   fetch(endpoint, {
     method: "GET",
-    headers: { "Content-Type": "application/json" },
   })
     .then((resposta) => {
       if (!resposta.ok) {
@@ -239,6 +246,7 @@ function carregar_grafico(dados) {
 }
 
 let registro, toggle, chart;
+let loading = document.getElementById("loading-modal");
 let canva = document.getElementById("chart");
 let tabela = document.getElementById("table-produtos");
 let mesAno = document.getElementById("mes");
