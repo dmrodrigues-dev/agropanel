@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre - Agropanel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>AGROPANEL</h1>
+        <nav>
+            <ul>
+                <li><a href="./index.html">Página Inicial</a></li>
+                <li><a href="./compras.html">Compras</a></li>
+                <li><a href="./vendas.html">Vendas</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="about-page">
+        <section class="about-section about-intro" id="sobre-projeto">
+            <h2>Sobre o Projeto</h2>
+            <div class="about-intro-block">
+                <h3>O que é o Agropanel?</h3>
+                <p>O Agropanel é um sistema web desenvolvido para simular a gestão de um pequeno comércio agropecuário.
+                </p>
+                <p>A aplicação permite cadastrar produtos, registrar compras e vendas, acompanhar o estoque e visualizar
+                    indicadores financeiros por período.</p>
+            </div>
+            <div class="about-intro-block">
+                <h3>Objetivo como projeto de portfólio</h3>
+                <p>O Agropanel foi desenvolvido como um projeto de portfólio com o
+                    objetivo de aplicar, em uma aplicação prática, conceitos de
+                    desenvolvimento web full stack, construção de APIs REST, integração
+                    com banco de dados e implementação de regras de negócio. Durante
+                    seu desenvolvimento, o foco foi buscar soluções que priorizassem
+                    organização, consistência dos dados e separação de responsabilidades.</p>
+            </div>
+        </section>
+
+        <section class="about-section" id="tecnologias">
+            <h2>Tecnologias Utilizadas</h2>
+            <div class="tech-card">
+                <h3>Frontend</h3>
+                <p>HTML, CSS e JavaScript puro foram utilizados para construir uma interface responsiva, com foco em
+                    clareza, desempenho e interação direta com a API.</p>
+            </div>
+            <div class="tech-card">
+                <h3>Backend</h3>
+                <p>A API foi desenvolvida em Python com Flask, organizada em blueprints para separar as
+                    responsabilidades de produtos, compras, vendas, estatísticas e rotinas de demonstração.</p>
+            </div>
+            <div class="tech-card">
+                <h3>Banco de Dados</h3>
+                <p>O PostgreSQL armazena os dados da aplicação e concentra regras importantes de integridade, como
+                    relacionamentos entre produtos e movimentações de estoque.</p>
+            </div>
+            <div class="tech-card">
+                <h3>Deploy</h3>
+                <p>O frontend está hospedado no Vercel e a API no Render, com banco de dados PostgreSQL no Supabase.</p>
+            </div>
+        </section>
+
+        <section class="about-section" id="arquitetura">
+            <h2>Arquitetura</h2>
+            <p>O Agropanel utiliza uma arquitetura cliente-servidor.</p>
+            <p>O frontend envia requisições HTTP para uma API REST. A API valida os dados recebidos, executa as regras
+                de negócio e se comunica com o banco PostgreSQL. Em seguida, os dados retornam em JSON e são exibidos
+                nas tabelas, cards e gráficos do painel.</p>
+        </section>
+
+        <section class="about-section" id="modelo-dados">
+            <h2>Modelo de Dados</h2>
+            <p>A aplicação possui três entidades principais:</p>
+            <ul class="data-model-list">
+                <li>Produtos: catálogo de itens, preço padrão de venda e estoque atual.</li>
+                <li>Compras: entradas de mercadorias, com fornecedor, valor, quantidade e data.</li>
+                <li>Vendas: saídas de mercadorias, com comprador, valor, quantidade e data.</li>
+            </ul>
+            <p>Compras aumentam o estoque e vendas o reduzem. Cada compra ou venda está vinculada a um produto.</p>
+        </section>
+
+        <section class="about-section" id="decisoes-tecnicas">
+            <h2>Decisões Técnicas</h2>
+            <ul class="technical-list">
+                <li>Uso de blueprints no Flask para manter as rotas organizadas por domínio.</li>
+                <li>Uso de SQLAlchemy Core com queries parametrizadas para comunicação com o banco.</li>
+                <li>Uso de triggers no PostgreSQL para atualizar o estoque automaticamente em inclusões, alterações e
+                    exclusões de compras e vendas.</li>
+                <li>Validações no backend para campos obrigatórios, campos permitidos, valores negativos e registros
+                    inexistentes.</li>
+                <li>Uso de modal de carregamento para comunicar a possível inicialização da API no plano gratuito do
+                    Render.</li>
+                <li>Dashboard com Chart.js para visualizar a receita por produto.</li>
+            </ul>
+        </section>
+
+        <section class="about-section" id="api">
+            <h2>API</h2>
+            <p>A API segue um padrão REST e disponibiliza operações de criação, consulta, alteração e exclusão para
+                produtos, compras e vendas.</p>
+            <p>Também possui uma rota de estatísticas que calcula receita, despesa,
+                resultado do período e os produtos com maior receita no mês selecionado.</p>
+        </section>
+
+        <section class="about-section about-deploy" id="experiencia-deploy">
+            <h2>Experiência e Deploy </h2>
+            <p>Como este é um projeto demonstrativo hospedado em serviços gratuitos, a API pode levar alguns segundos
+                para iniciar após um período sem acessos. A interface informa essa situação ao visitante e oferece uma
+                opção para recarregar em caso de falha de conexão.</p>
+            <p>O objetivo do Agropanel foi construir uma
+                aplicação funcional de ponta a ponta, explorando integração entre frontend, API, banco de dados e regras
+                de negócio.</p>
+        </section>
+    </main>
+
+    <footer>
+        <h2>Desenvolvido por dmrodrigues-dev</h2>
+        <ul>
+            <li><a href="https://github.com/dmrodrigues-dev">GitHub</a></li>
+            <li><a href="https://www.linkedin.com/in/davi-matos-rodrigues-057430268/">LinkedIn</a></li>
+            <li><a href="mailto:davimatosrodrigues02@gmail.com">E-mail</a></li>
+        </ul>
+    </footer>
+
+</body>
+
+</html>

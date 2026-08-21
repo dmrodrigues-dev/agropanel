@@ -342,3 +342,129 @@ footer a:hover {
   padding: 2rem;
   text-align: center;
 }
+
+/* About page */
+.about-page {
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.about-section {
+  padding: 1.5rem;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.about-section h2 {
+  margin-bottom: 1rem;
+  color: var(--primary);
+  font-size: 1.2rem;
+}
+
+.about-section h3 {
+  margin-bottom: 0.45rem;
+  color: var(--text-dark);
+  font-size: 1rem;
+}
+
+.about-section p,
+.about-section li {
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.about-section p + p {
+  margin-top: 0.85rem;
+}
+
+.about-intro {
+  border-left: 4px solid var(--primary);
+}
+
+.about-intro-block + .about-intro-block {
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border);
+}
+
+#tecnologias {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+#tecnologias h2 {
+  grid-column: 1 / -1;
+}
+
+.tech-card {
+  padding: 1.1rem;
+  background-color: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.tech-card:hover {
+  border-color: var(--primary);
+}
+
+#arquitetura {
+  background-color: var(--bg-main);
+}
+
+#arquitetura p:first-of-type {
+  margin-bottom: 0.75rem;
+  color: var(--text-dark);
+  font-weight: 600;
+}
+
+.data-model-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+  list-style: none;
+}
+
+.data-model-list li {
+  padding: 1rem;
+  background-color: var(--bg-main);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.technical-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem 1.5rem;
+  padding-left: 1.25rem;
+}
+
+.technical-list li::marker {
+  color: var(--primary);
+}
+
+#api {
+  border-top: 3px solid var(--primary);
+}
+
+.about-deploy {
+  background-color: var(--bg-main);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+@media (max-width: 700px) {
+  #tecnologias,
+  .data-model-list,
+  .technical-list {
+    grid-template-columns: 1fr;
+  }
+
+  .about-section {
+    padding: 1.25rem;
+  }
+}
