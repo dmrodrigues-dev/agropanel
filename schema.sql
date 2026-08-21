@@ -3,7 +3,10 @@ create table produtos (
   id bigint generated always as identity primary key,
   nome varchar(80) not null,
   preco_de_venda numeric(10,2) not null,
-  estoque int not null default 0
+  estoque int not null default 0,
+
+  constraint estoque_nao_negativo check (estoque >= 0),
+  constraint preco_positivo check (preco_de_venda >= 0)
 );
 
 CREATE TABLE compras (
@@ -13,6 +16,9 @@ CREATE TABLE compras (
     preco numeric(10,2) NOT NULL,
     qtd integer NOT NULL,
     fornecedor varchar(80) NOT NULL,
+
+    constraint compra_qtd_positiva check (qtd >= 0),
+    constraint compra_preco_positivo check (preco >= 0),
 
     FOREIGN KEY (produto_id)
     REFERENCES produtos(id)
@@ -25,6 +31,9 @@ CREATE TABLE vendas (
     preco numeric(10,2) NOT NULL,
     qtd integer NOT NULL,
     comprador varchar(80),
+
+    constraint venda_qtd_positiva check (qtd >= 0),
+    constraint venda_preco_positivo check (preco >= 0),
 
     FOREIGN KEY (produto_id)
     REFERENCES produtos(id)
@@ -66,6 +75,32 @@ begin
 end;
 $$ language plpgsql;
 
+create or replace function valida_estoque()
+returns trigger as $$
+declare
+  estoque_atual integer;
+  qtd_necessaria integer;
+begin
+  if TG_OP = 'INSERT' then
+    qtd_necessaria := NEW.qtd;
+  elsif new.produto_id = old.produto_id then
+    qtd_necessaria := greatest(new.qtd - old.qtd, 0);
+  else
+    qtd_necessaria := new.qtd;
+  end if;
+
+  select estoque into estoque_atual
+  from produtos where id = new.produto_id
+  for update;
+
+  if qtd_necessaria > estoque_atual then
+    raise exception 'Estoque insuficiente para esta venda.';
+  end if;
+
+  return new;
+end;
+$$ language plpgsql;
+
 create trigger add_del_compra_gatilho
 after insert or delete on compras
 for each row
@@ -87,3 +122,8 @@ after update on vendas
 for each row
 when (old.qtd is distinct from new.qtd or old.produto_id is distinct from new.produto_id)
 execute function put_estoque('-1');
+
+create trigger validar_estoque_venda
+before insert or update on vendas
+for each row
+execute function valida_estoque();
